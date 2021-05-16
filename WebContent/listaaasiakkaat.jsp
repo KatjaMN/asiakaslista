@@ -64,25 +64,27 @@ function haeAsiakkaat(){
 	$.getJSON({url:"asiakkaat/"+$("#hakusana").val(), type:"GET", dataType:"json", success:function(result){//Funktio palauttaa tiedot json-objektina		
 		$.each(result.asiakkaat, function(i, field){  
         	var htmlStr;
-        	htmlStr+="<tr id='rivi_"+field.sukunimi+"'>";
+        	htmlStr+="<tr id='rivi_'" + field.asiakas_id + ">";
         	htmlStr+="<td>"+field.etunimi+"</td>";
         	htmlStr+="<td>"+field.sukunimi+"</td>";
         	htmlStr+="<td>"+field.puhelin+"</td>"; 
-        	htmlStr+="<td>"+field.sposti+"</td>"; 
-        	htmlStr+="<td><span class='poista' onclick=poista('"+field.sukunimi+"')>Poista</span></td>";
+        	htmlStr+="<td>"+field.sposti+"</td>";
+        	htmlStr+="<td><a href='muutaasiakas.jsp?asiakas_id="+field.asiakas_id+"'>Muuta</a>&nbsp;"; 
+        	htmlStr+="<span class='poista' onclick=poista("+field.asiakas_id+",'"+field.etunimi+"','"+field.sukunimi+"')>Poista</span></td>";
         	htmlStr+="</tr>";
         	$("#listaus tbody").append(htmlStr);
         });	
     }});
 }
-function poista(sukunimi){
-	if(confirm("Poista asiakas " + sukunimi +"?")){
-		$.ajax({url:"asiakkaat/"+sukunimi, type:"DELETE", dataType:"json", success:function(result) { //result on joko {"response:1"} tai {"response:0"}
+
+function poista(asiakas_id, etunimi, sukunimi){
+	if(confirm("Poista asiakas " + etunimi + " " + sukunimi + "?")){
+		$.ajax({url:"asiakkaat/"+asiakas_id, type:"DELETE", dataType:"json", success:function(result) { //result on joko {"response:1"} tai {"response:0"}
 	        if(result.response==0){
 	        	$("#ilmo").html("Asiakkaan poisto epäonnistui.");
 	        }else if(result.response==1){
 	        	$("#rivi_"+sukunimi).css("background-color", "red"); //Värjätään poistetun asiakkaan rivi
-	        	alert("Asiakkaan " + sukunimi + " poisto onnistui.");
+	        	alert("Asiakkaan " + etunimi + " " + sukunimi + " poisto onnistui.");
 				haeAsiakkaat();        	
 			}
 	    }});
